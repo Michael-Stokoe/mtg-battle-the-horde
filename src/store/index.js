@@ -64,6 +64,7 @@ const store = createStore({
                         "deathTouch": false,
                         "firstStrike": false,
                         "menace": false,
+                        "inGraveyard": false,
                     });
 
                     x++;
@@ -141,6 +142,7 @@ const store = createStore({
                 let card = library[i];
 
                 if (card.type === 'Sorcery') {
+                    card.inGraveyard = true;
                     graveyard.push(card);
                 } else {
                     boardState.push(card);
@@ -193,6 +195,7 @@ const store = createStore({
 
                 boardState.forEach((card) => {
                     if (card.type === 'Creature' && (damageToCreatures >= card.toughness)) {
+                        card.inGraveyard = true;
                         graveyard.push(card);
                         toRemove.push(card);
 
@@ -259,6 +262,7 @@ const store = createStore({
                     card.menace = false;
                     card.firstStrike = false;
                     card.deathTouch = false;
+                    card.inGraveyard = true;
                     graveyard.push(card);
                 }
             });
@@ -276,7 +280,8 @@ const store = createStore({
 
             let card = boardState.filter(card => card.index === index)[0];
             console.log(card);
-            
+            card.tapped = false;
+            card.inGraveyard = true;
             graveyard.push(card);
             boardState.splice(boardState.indexOf(card), 1);
 
@@ -290,6 +295,7 @@ const store = createStore({
             let cardsForGraveyard = library.splice(0, damage);
             cardsForGraveyard.forEach(card => {
                 card.tapped = false;
+                card.inGraveyard = true;
                 graveyard.push(card);
             });
 

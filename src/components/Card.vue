@@ -6,19 +6,19 @@
             'border-red-500 rounded-lg border-8': isAttacking
         }">
 
-        <div class="absolute top-3 right-5">
-            <button class="text-white hover:text-gray-300" title="Destroy" @click="destroyCard">
+        <div v-if="showDestroyButton" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <button class="text-3xl text-white hover:text-gray-300" title="Destroy" @click="destroyCard">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
 
-        <div v-if="card.deathTouch || card.menace || card.firstStrike" class="absolute bottom-2 left-5 flex flex-col space-y-2 bg-black text-white text-xs p-1 rounded">
+        <div v-if="card.deathTouch || card.menace || card.firstStrike" class="flex absolute bottom-2 left-5 flex-col p-1 space-y-2 text-xs text-white bg-black rounded">
             <div v-if="card.menace" title="Menace">Menace</div>
             <div v-if="card.deathTouch" title="Deathtouch">Deathtouch</div>
             <div v-if="card.firstStrike" title="First Strike">First Strike</div>
         </div>
 
-        <div v-if="type === 'Creature'" class="absolute bottom-3 rounded right-3 bg-gray-100 text-black font-semibold px-1">
+        <div v-if="type === 'Creature'" class="absolute right-3 bottom-3 px-1 font-semibold text-black bg-gray-100 rounded">
             <p title="Power / Toughnes" class="text-xs">{{ card.power }} / {{ card.toughness }}</p>
         </div>
     </div>
@@ -47,6 +47,12 @@
         computed: {
             tapped () {
                 return this.card.tapped;
+            },
+            showDestroyButton() {
+                return (
+                    this.card.type !== 'Sorcery' &&
+                    this.card.inGraveyard === false
+                );
             }
         },
         watch: {
