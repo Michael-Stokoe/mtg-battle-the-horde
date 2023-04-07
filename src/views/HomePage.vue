@@ -1,20 +1,28 @@
 <template>
     <div class="flex flex-col p-12 space-y-4">
-        <h1 class="text-xl text-red-500">Battle The Horde</h1>
-        <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
-        <p class="text-xl">Current turn: {{ turn }}</p>
-        <div>
-            <button @click="showGuide = !showGuide" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-900">Toggle Rules/Guide</button>
+        <div class="grid grid-cols-7 gap-4">
+            <div class="col-span-5">
+                <h1 class="text-6xl font-semibold text-red-500">Battle The Horde</h1>
+
+                <p class="text-xl">Current turn: {{ turn }}</p>
+
+                <div class="mt-2">
+                    <button @click="showGuide = !showGuide" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-900">Toggle Rules/Guide</button>
+                </div>
+
+                <ul v-if="showGuide" class="p-4 mt-2 bg-gray-300 rounded-lg">
+                    <li>If you're playing a standard 40 card deck, play your first turn then the minotaurs start playing.</li>
+                    <li>If you're playing a commander deck, take your first 3 turns then start playing.</li>
+                    <li>If you want an increased challenge, reduce the amount of set-up turns you take, or allow the minotaurs to go first.</li>
+                    <li>A red border on a creature indicates that creature is attacking this turn.</li>
+                    <li>When sorceries are played by the horde, the card will appear first on screen at the top, and go straight to the horde's graveyard.</li>
+                    <li>Attacking the horde on your turn will put X cards from the horde's library into its graveyard, where X is the damage you dealt.</li>
+                </ul>
+            </div>
+            <div class="col-span-2">
+                <life-counter />
+            </div>
         </div>
-        <ul v-if="showGuide" class="p-4 bg-gray-300 rounded-lg">
-            <li>If you're playing a standard 40 card deck, play your first turn then the minotaurs start playing.</li>
-            <li>If you're playing a commander deck, take your first 3 turns then start playing.</li>
-            <li>If you want an increased challenge, reduce the amount of set-up turns you take, or allow the minotaurs to go first.</li>
-            <li>A red border on a creature indicates that creature is attacking this turn.</li>
-            <li>When sorceries are played by the horde, the card will appear first on screen at the top, and go straight to the horde's graveyard.</li>
-            <li>Attacking the horde on your turn will put X cards from the horde's library into its graveyard, where X is the damage you dealt.</li>
-        </ul>
-        <!-- {{ library }} -->
 
         <div clas="relative flex space-x-2">
             <div class="absolute z-10 w-full h-full" v-if="highlightedCards.length">
@@ -35,6 +43,33 @@
             </button> -->
             
             <div class="flex flex-row space-x-2">
+                <button
+                    v-if="currentPhase === 'Game not started'"
+                    @click="startGame"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                >
+                    Start Game
+                </button>
+                <button
+                    v-if="currentPhase === 'Waiting...'"
+                    @click="playSpells"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                >
+                    Play Spells
+                </button>
+                <button
+                    v-if="currentPhase === 'Spells Played'"
+                    @click="declareAttackers"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                >
+                    Declare Attackers
+                </button>
+                
+                <button
+                    v-if="currentPhase === 'Attackers Declared'"
+                    @click="resolveDamage"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                ><div class="flex flex-row space-x-2">
                 <button
                     v-if="currentPhase === 'Game not started'"
                     @click="startGame"
@@ -89,13 +124,48 @@
                     </button>
                 </div>
             </div>
+
+            <p class="text-xl text-red-500">
+                Status: {{ currentPhase }}
+            </p>
+
+            <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
+                    Resolve Damage
+                </button>
+                
+                <button
+                    v-if="currentPhase === 'Declare Blockers and Damage Resolution'"
+                    @click="endTurn"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                >
+                    End Turn
+                </button>
+                <button
+                    v-if="currentPhase !== 'Game not started'"
+                    @click="newGame"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                >
+                    New Game
+                </button>
+                <div v-if="currentPhase !== 'Game not started'">
+                    <input type="text" v-model="damage" class="px-2 py-2 rounded border">
+                    <button
+                        @click="dealDamage"
+                        class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                    >
+                        Deal damage
+                    </button>
+                </div>
+            </div>
+
+            <p class="mt-8 text-xl text-red-500">
+                Status: {{ currentPhase }}
+            </p>
+
+            <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
         </div>
 
-        <p class="text-xl text-red-500">
-            Status: {{ currentPhase }}
-        </p>
-
-        <h2 class="text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
+        <h2 class="pt-8 text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
         <div class="grid grid-cols-3 gap-12 p-6 bg-gray-200 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardArtifacts.length">
             <div v-for="card in boardArtifacts" :key="card.index">
                 <card :card="card" />
@@ -121,10 +191,12 @@
 
 <script>
     import Card from '../components/Card.vue';
+    import LifeCounter from '../components/LifeCounter.vue';
 
     export default {
         components: {
             Card,
+            LifeCounter,
         },
         data: () => ({
             currentPhase: 'Game not started',
