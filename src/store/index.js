@@ -277,7 +277,7 @@ const store = createStore({
             }).length > 0;
 
             boardState.forEach((card) => {
-                if (card.name === 'Reckless Minotaur' || consumingRagePlayed) {
+                if (card.type === 'Creature' && (card.name === 'Reckless Minotaur' || consumingRagePlayed)) {
                     toRemove.push(card);
                     card.tapped = false;
                     card.menace = false;
