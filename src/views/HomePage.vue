@@ -4,8 +4,6 @@
             <div class="col-span-5">
                 <h1 class="text-6xl font-semibold text-red-500">Battle The Horde</h1>
 
-                <p class="text-xl">Current turn: {{ turn }}</p>
-
                 <div class="mt-2">
                     <button @click="showGuide = !showGuide" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-900">Toggle Rules/Guide</button>
                 </div>
@@ -41,7 +39,7 @@
             >
                 Shuffle
             </button> -->
-            
+                    
             <div class="flex flex-row space-x-2">
                 <button
                     v-if="currentPhase === 'Game not started'"
@@ -69,33 +67,6 @@
                     v-if="currentPhase === 'Attackers Declared'"
                     @click="resolveDamage"
                     class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                ><div class="flex flex-row space-x-2">
-                <button
-                    v-if="currentPhase === 'Game not started'"
-                    @click="startGame"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                >
-                    Start Game
-                </button>
-                <button
-                    v-if="currentPhase === 'Waiting...'"
-                    @click="playSpells"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                >
-                    Play Spells
-                </button>
-                <button
-                    v-if="currentPhase === 'Spells Played'"
-                    @click="declareAttackers"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                >
-                    Declare Attackers
-                </button>
-                
-                <button
-                    v-if="currentPhase === 'Attackers Declared'"
-                    @click="resolveDamage"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     Resolve Damage
                 </button>
@@ -125,42 +96,11 @@
                 </div>
             </div>
 
-            <p class="text-xl text-red-500">
+            <p class="mt-6 text-xl text-red-500">
                 Status: {{ currentPhase }}
             </p>
 
-            <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
-                    Resolve Damage
-                </button>
-                
-                <button
-                    v-if="currentPhase === 'Declare Blockers and Damage Resolution'"
-                    @click="endTurn"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                >
-                    End Turn
-                </button>
-                <button
-                    v-if="currentPhase !== 'Game not started'"
-                    @click="newGame"
-                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                >
-                    New Game
-                </button>
-                <div v-if="currentPhase !== 'Game not started'">
-                    <input type="text" v-model="damage" class="px-2 py-2 rounded border">
-                    <button
-                        @click="dealDamage"
-                        class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
-                    >
-                        Deal damage
-                    </button>
-                </div>
-            </div>
-
-            <p class="mt-8 text-xl text-red-500">
-                Status: {{ currentPhase }}
-            </p>
+            <p class="text-xl">Current Turn: {{ turn }}</p>
 
             <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
         </div>
