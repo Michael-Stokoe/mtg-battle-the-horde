@@ -28,16 +28,19 @@
     export default {
         props: [
             'card',
+            'popupCard',
         ],
         mounted () {
             this.type = this.card.type;
             this.image = '/images/cards/' + this.card.image;
+            this.isPopup = this.popupCard;
         },
         data: () => ({
             name: null,
             type: null,
             image: null,
             isAttacking: false,
+            isPopup: false,
         }),
         methods: {
             destroyCard () {
@@ -51,7 +54,8 @@
             showDestroyButton() {
                 return (
                     this.card.type !== 'Sorcery' &&
-                    this.card.inGraveyard === false
+                    this.card.inGraveyard === false &&
+                    !this.isPopup
                 );
             }
         },

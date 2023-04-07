@@ -25,7 +25,7 @@
         <div clas="relative flex space-x-2">
             <div class="absolute z-10 w-full h-full" v-if="highlightedCards.length">
                 <div class="grid grid-cols-4">
-                    <card class="shadow-xl" v-for="card in highlightedCards" :key="card" :card="card" />
+                    <card :popupCard="true" class="shadow-xl" v-for="card in highlightedCards" :key="card" :card="card" />
                 </div>
             </div>
             <div class="absolute z-10 w-full h-full" v-if="showDamageBox">
@@ -108,21 +108,21 @@
         <h2 class="pt-8 text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
         <div class="grid grid-cols-3 gap-12 p-6 bg-gray-200 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardArtifacts.length">
             <div v-for="card in boardArtifacts" :key="card.index">
-                <card :card="card" />
+                <card :popupCard="false" :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Creatures ({{ boardCreatures.length }}):</h2>
         <div class="grid grid-cols-3 gap-12 p-6 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardCreatures.length">
             <div v-for="card in boardCreatures" :key="card.index">
-                <card :card="card" />
+                <card :popupCard="false" :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Graveyard ({{ graveyard.length }}):</h2>
         <div class="grid grid-cols-3 gap-12 p-6 bg-gray-300 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="graveyard.length">
             <div v-for="card in graveyard" :key="card.index">
-                <card :card="card" />
+                <card :popupCard="false" :card="card" />
             </div>
         </div>
     </div>
