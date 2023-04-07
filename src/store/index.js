@@ -34,7 +34,7 @@ const store = createStore({
         },
         cardsPlayedThisTurn (state) {
             return state.cardsPlayedThisTurn;
-        }
+        },
     },
     actions: {
         loadDeck (context) {
@@ -84,6 +84,9 @@ const store = createStore({
         },
         handleEndStep (context) {
             context.commit('handleEndStep');
+        },
+        cleanUp (context) {
+            context.commit('cleanUp');
         },
         destroyCard (context, index) {
             context.commit('destroyCard', index);
@@ -245,18 +248,36 @@ const store = createStore({
             state.graveyard = graveyard;
         },
         handleEndStep (state) {
+            
+        },
+        destroyCard (state, index) {
             let boardState = Object.assign(state.boardState, []);
             let graveyard = Object.assign(state.graveyard, []);
 
-            // need to kill all 'Reckless Minotaur' cards
-            // Add them to graveyard
-            // Remove them from boardstate
+            let card = boardState.filter(card => card.index === index)[0];
+            console.log(card);
+            card.tapped = false;
+            card.inGraveyard = true;
+            graveyard.push(card);
+            boardState.splice(boardState.indexOf(card), 1);
+
+            state.boardState = boardState;
+            state.graveyard = graveyard;
+        },
+        cleanUp (state) {
+            let boardState = Object.assign(state.boardState, []);
+            let graveyard = Object.assign(state.graveyard, []);
+            let played = state.cardsPlayedThisTurn;
 
             let x = 0;
             let toRemove = [];
 
+            let consumingRagePlayed = played.filter(card => {
+                return card.name === 'Consuming Rage';
+            }).length > 0;
+
             boardState.forEach((card) => {
-                if (card.name === 'Reckless Minotaur') {
+                if (card.name === 'Reckless Minotaur' || consumingRagePlayed) {
                     toRemove.push(card);
                     card.tapped = false;
                     card.menace = false;
@@ -270,20 +291,6 @@ const store = createStore({
             toRemove.forEach(card => {
                 boardState.splice(boardState.indexOf(card), 1);
             });
-
-            state.boardState = boardState;
-            state.graveyard = graveyard;
-        },
-        destroyCard (state, index) {
-            let boardState = Object.assign(state.boardState, []);
-            let graveyard = Object.assign(state.graveyard, []);
-
-            let card = boardState.filter(card => card.index === index)[0];
-            console.log(card);
-            card.tapped = false;
-            card.inGraveyard = true;
-            graveyard.push(card);
-            boardState.splice(boardState.indexOf(card), 1);
 
             state.boardState = boardState;
             state.graveyard = graveyard;

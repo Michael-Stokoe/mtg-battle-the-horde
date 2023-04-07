@@ -23,7 +23,7 @@
         </div>
 
         <div clas="relative flex space-x-2">
-            <div class="absolute z-10 w-full h-full" v-if="highlightedCards.length">
+            <div class="absolute z-10 mt-12 w-full h-full" v-if="highlightedCards.length">
                 <div class="grid grid-cols-4">
                     <card :popupCard="true" class="shadow-xl" v-for="card in highlightedCards" :key="card" :card="card" />
                 </div>
@@ -167,6 +167,7 @@
                 this.$store.dispatch('handleEndStep');
             },
             endTurn () {
+                this.$store.dispatch('cleanUp');
                 this.currentPhase = 'Waiting...';
             },
             showSorceryPlayed (card) {
