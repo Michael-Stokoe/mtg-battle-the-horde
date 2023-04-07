@@ -1,19 +1,35 @@
 <template>
-    <div class="flex flex-col space-y-4 p-12">
-        <h1 class="text-xl text-red-500">Welcome to Battle The Horde</h1>
-        <p class="text-xl text-red-500">The horde has {{ remainingCards }} cards remaining in its library</p>
-        <p class="text-xl text-red-500">Current turn: {{ turn }}</p>
+    <div class="flex flex-col p-12 space-y-4">
+        <h1 class="text-xl text-red-500">Battle The Horde</h1>
+        <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
+        <p class="text-xl">Current turn: {{ turn }}</p>
+        <div>
+            <button @click="showGuide = !showGuide" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-900">Toggle Rules/Guide</button>
+        </div>
+        <ul v-if="showGuide" class="p-4 bg-gray-300 rounded-lg">
+            <li>If you're playing a standard 40 card deck, play your first turn then the minotaurs start playing.</li>
+            <li>If you're playing a commander deck, take your first 3 turns then start playing.</li>
+            <li>If you want an increased challenge, reduce the amount of set-up turns you take, or allow the minotaurs to go first.</li>
+            <li>A red border on a creature indicates that creature is attacking this turn.</li>
+            <li>When sorceries are played by the horde, the card will appear first on screen at the top, and go straight to the horde's graveyard.</li>
+            <li>Attacking the horde on your turn will put X cards from the horde's library into its graveyard, where X is the damage you dealt.</li>
+        </ul>
         <!-- {{ library }} -->
 
         <div clas="relative flex space-x-2">
-            <div class="absolute h-full w-full z-10" v-if="highlightedCards.length">
+            <div class="absolute z-10 w-full h-full" v-if="highlightedCards.length">
                 <div class="grid grid-cols-4">
                     <card class="shadow-xl" v-for="card in highlightedCards" :key="card" :card="card" />
                 </div>
             </div>
+            <div class="absolute z-10 w-full h-full" v-if="showDamageBox">
+                <div class="flex p-6 w-96 bg-white shadow-xl">
+                    You dealt {{ damageDealt }} to the horde, it has put {{ damageDealt }} cards from ontop of its library into its graveyard.
+                </div>
+            </div>
             <!-- <button
                 @click="shuffleHordeLibrary"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
             >
                 Shuffle
             </button> -->
@@ -22,21 +38,21 @@
                 <button
                     v-if="currentPhase === 'Game not started'"
                     @click="startGame"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     Start Game
                 </button>
                 <button
                     v-if="currentPhase === 'Waiting...'"
                     @click="playSpells"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     Play Spells
                 </button>
                 <button
                     v-if="currentPhase === 'Spells Played'"
                     @click="declareAttackers"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     Declare Attackers
                 </button>
@@ -44,7 +60,7 @@
                 <button
                     v-if="currentPhase === 'Attackers Declared'"
                     @click="resolveDamage"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     Resolve Damage
                 </button>
@@ -52,17 +68,26 @@
                 <button
                     v-if="currentPhase === 'Declare Blockers and Damage Resolution'"
                     @click="endTurn"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     End Turn
                 </button>
                 <button
                     v-if="currentPhase !== 'Game not started'"
                     @click="newGame"
-                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                    class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
                 >
                     New Game
                 </button>
+                <div v-if="currentPhase !== 'Game not started'">
+                    <input type="text" v-model="damage" class="px-2 py-2 rounded border">
+                    <button
+                        @click="dealDamage"
+                        class="px-4 py-2 text-white bg-blue-600 rounded transition-all hover:bg-blue-900"
+                    >
+                        Deal damage
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -71,21 +96,21 @@
         </p>
 
         <h2 class="text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
-        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6 bg-gray-200 rounded-lg" v-if="boardArtifacts.length">
+        <div class="grid grid-cols-3 gap-12 p-6 bg-gray-200 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardArtifacts.length">
             <div v-for="card in boardArtifacts" :key="card.index">
                 <card :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Creatures ({{ boardCreatures.length }}):</h2>
-        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6" v-if="boardCreatures.length">
+        <div class="grid grid-cols-3 gap-12 p-6 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardCreatures.length">
             <div v-for="card in boardCreatures" :key="card.index">
                 <card :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Graveyard ({{ graveyard.length }}):</h2>
-        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6 bg-gray-300 rounded-lg" v-if="graveyard.length">
+        <div class="grid grid-cols-3 gap-12 p-6 bg-gray-300 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="graveyard.length">
             <div v-for="card in graveyard" :key="card.index">
                 <card :card="card" />
             </div>
@@ -105,6 +130,10 @@
             currentPhase: 'Game not started',
             advanceText: 'Start game',
             highlightedCards: [],
+            showGuide: false,
+            damage: 0,
+            damageDealt: 0,
+            showDamageBox: false
         }),
         methods: {
             shuffleHordeLibrary () {
@@ -133,6 +162,19 @@
 
                 setTimeout(() => {
                     this.highlightedCards.splice(0, 1);
+                }, 3000);
+            },
+            dealDamage () {
+                this.$store.dispatch('dealDamage', this.damage);
+                this.showDamage(this.damage);
+                this.damage = 0;
+            },
+            showDamage (damage) {
+                this.showDamageBox = true;
+                this.damageDealt = damage;
+
+                setTimeout(() => {
+                    this.showDamageBox = false;
                 }, 3000);
             }
         },

@@ -86,6 +86,9 @@ const store = createStore({
         },
         destroyCard (context, index) {
             context.commit('destroyCard', index);
+        },
+        dealDamage (context, damage) {
+            context.commit('dealDamage', damage);
         }
     },
     mutations: {
@@ -278,6 +281,19 @@ const store = createStore({
             boardState.splice(boardState.indexOf(card), 1);
 
             state.boardState = boardState;
+            state.graveyard = graveyard;
+        },
+        dealDamage (state, damage) {
+            let library = Object.assign(state.library, []);
+            let graveyard = Object.assign(state.graveyard, []);
+
+            let cardsForGraveyard = library.splice(0, damage);
+            cardsForGraveyard.forEach(card => {
+                card.tapped = false;
+                graveyard.push(card);
+            });
+
+            state.library = library;
             state.graveyard = graveyard;
         }
     },
