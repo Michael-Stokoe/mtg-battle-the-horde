@@ -7,18 +7,15 @@
         }">
 
         <div class="absolute top-3 right-5">
-            <button class="text-white hover:text-gray-300" title="Destroy">
+            <button class="text-white hover:text-gray-300" title="Destroy" @click="destroyCard">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
 
-        <div class="absolute bottom-2 left-5 flex space-x-4">
-            <button v-if="card.deathTouch" class="text-black" title="Death Touch">
-                <i class="fas fa-skull"></i>
-            </button>
-            <button v-if="card.firstStrike" class="text-black" title="First Strike">
-                <i class="fas fa-person-running"></i>
-            </button>
+        <div v-if="card.deathTouch || card.menace || card.firstStrike" class="absolute bottom-2 left-5 flex flex-col space-y-2 bg-black text-white text-xs p-1 rounded">
+            <div v-if="card.menace" title="Menace">Menace</div>
+            <div v-if="card.deathTouch" title="Deathtouch">Deathtouch</div>
+            <div v-if="card.firstStrike" title="First Strike">First Strike</div>
         </div>
 
         <div v-if="type === 'Creature'" class="absolute bottom-3 rounded right-3 bg-gray-100 text-black font-semibold px-1">
@@ -40,7 +37,13 @@
             name: null,
             type: null,
             image: null,
+            isAttacking: false,
         }),
+        methods: {
+            destroyCard () {
+                this.$store.dispatch('destroyCard', this.card.index);
+            }
+        },
         computed: {
             tapped () {
                 return this.card.tapped;

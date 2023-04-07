@@ -1,0 +1,122 @@
+[
+    {
+        "name": "Minotaur Goreseeker",
+        "count": 10,
+        "type": "Creature",
+        "image": "tbth-1-minotaur-goreseeker.jpg",
+        "power": 3,
+        "toughness": 2
+    },
+    {
+        "name": "Minotaur Younghorn",
+        "count": 15,
+        "type": "Creature",
+        "image": "tbth-2-minotaur-younghorn.jpg",
+        "power": 2,
+        "toughness": 2
+    },
+    {
+        "name": "Mogis's Chosen",
+        "count": 4,
+        "type": "Creature",
+        "image": "tbth-3-mogis-s-chosen.jpg",
+        "power": 5,
+        "toughness": 4
+    },
+    {
+        "name": "Phoberos Reaver",
+        "count": 10,
+        "type": "Creature",
+        "image": "tbth-4-phoberos-reaver.jpg",
+        "power": 2,
+        "toughness": 3
+    },
+    {
+        "name": "Reckless Minotaur",
+        "count": 4,
+        "type": "Creature",
+        "image": "tbth-5-reckless-minotaur.jpg",
+        "power": 4,
+        "toughness": 1
+    },
+    {
+        "name": "Consuming Rage",
+        "count": 2,
+        "type": "Sorcery",
+        "image": "tbth-6-consuming-rage.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Descend on the Prey",
+        "count": 2,
+        "type": "Sorcery",
+        "image": "tbth-7-descend-on-the-prey.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Intervention of Keranos",
+        "count": 2,
+        "type": "Sorcery",
+        "image": "tbth-8-intervention-of-keranos.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Touch of the Horned God",
+        "count": 2,
+        "type": "Sorcery",
+        "image": "tbth-9-touch-of-the-horned-god.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Unquenchable Fury",
+        "count": 2,
+        "type": "Sorcery",
+        "image": "tbth-10-unquenchable-fury.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Altar of Mogis",
+        "count": 1,
+        "type": "Artifact",
+        "image": "tbth-11-altar-of-mogis.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Massacre Totem",
+        "count": 1,
+        "type": "Artifact",
+        "image": "tbth-12-massacre-totem.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Plundered Statue",
+        "count": 2,
+        "type": "Artifact",
+        "image": "tbth-13-plundered-statue.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Refreshing Elixir",
+        "count": 2,
+        "type": "Artifact",
+        "image": "tbth-14-refreshing-elixir.jpg",
+        "power": 0,
+        "toughness": 0
+    },
+    {
+        "name": "Vitality Salve",
+        "count": 1,
+        "type": "Artifact",
+        "image": "tbth-15-vitality-salve.jpg",
+        "power": 0,
+        "toughness": 0
+    }
+]

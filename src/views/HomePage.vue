@@ -5,54 +5,65 @@
         <p class="text-xl text-red-500">Current turn: {{ turn }}</p>
         <!-- {{ library }} -->
 
-        <div clas="flex space-x-2">
-            <button
+        <div clas="relative flex space-x-2">
+            <div class="absolute h-full w-full z-10" v-if="highlightedCards.length">
+                <div class="grid ">
+                    <card v-for="card in highlightedCards" :key="card" :card="card" />
+                </div>
+            </div>
+            <!-- <button
                 @click="shuffleHordeLibrary"
                 class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
             >
                 Shuffle
-            </button>
+            </button> -->
             
-            <button
-                v-if="currentPhase === 'Game not started'"
-                @click="startGame"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
-            >
-                Start Game
-            </button>
-            
-            <button
-                v-if="currentPhase === 'Waiting...'"
-                @click="playSpells"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
-            >
-                Play Spells
-            </button>
-            
-            <button
-                v-if="currentPhase === 'Spells Played'"
-                @click="declareAttackers"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
-            >
-                Declare Attackers
-            </button>
-            
-            <button
-                v-if="currentPhase === 'Attackers Declared'"
-                @click="resolveDamage"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
-            >
-                Resolve Damage
-            </button>
-            
-            <button
-                v-if="currentPhase === 'Declare Blockers and Damage Resolution'"
-                @click="endTurn"
-                class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
-            >
-                End Turn
-            </button>
-
+            <div class="flex flex-row space-x-2">
+                <button
+                    v-if="currentPhase === 'Game not started'"
+                    @click="startGame"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    Start Game
+                </button>
+                <button
+                    v-if="currentPhase === 'Waiting...'"
+                    @click="playSpells"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    Play Spells
+                </button>
+                <button
+                    v-if="currentPhase === 'Spells Played'"
+                    @click="declareAttackers"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    Declare Attackers
+                </button>
+                
+                <button
+                    v-if="currentPhase === 'Attackers Declared'"
+                    @click="resolveDamage"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    Resolve Damage
+                </button>
+                
+                <button
+                    v-if="currentPhase === 'Declare Blockers and Damage Resolution'"
+                    @click="endTurn"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    End Turn
+                </button>
+                <button
+                    v-if="currentPhase !== 'Game not started'"
+                    @click="newGame"
+                    class="bg-blue-600 hover:bg-blue-900 transition-all text-white py-2 px-4 rounded"
+                >
+                    New Game
+                </button>
+            </div>
         </div>
 
         <p class="text-xl text-red-500">
@@ -60,21 +71,21 @@
         </p>
 
         <h2 class="text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
-        <div class="grid grid-cols-5 gap-12 p-6 bg-gray-200 rounded-lg" v-if="boardArtifacts.length">
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6 bg-gray-200 rounded-lg" v-if="boardArtifacts.length">
             <div v-for="card in boardArtifacts" :key="card.index">
                 <card :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Creatures ({{ boardCreatures.length }}):</h2>
-        <div class="grid grid-cols-5 gap-12 p-6" v-if="boardCreatures.length">
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6" v-if="boardCreatures.length">
             <div v-for="card in boardCreatures" :key="card.index">
                 <card :card="card" />
             </div>
         </div>
 
         <h2 class="text-xl font-semibold">Graveyard ({{ graveyard.length }}):</h2>
-        <div class="grid grid-cols-5 gap-12 p-6 bg-gray-300 rounded-lg" v-if="graveyard.length">
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-12 p-6 bg-gray-300 rounded-lg" v-if="graveyard.length">
             <div v-for="card in graveyard" :key="card.index">
                 <card :card="card" />
             </div>
@@ -93,6 +104,7 @@
         data: () => ({
             currentPhase: 'Game not started',
             advanceText: 'Start game',
+            highlightedCards: [],
         }),
         methods: {
             shuffleHordeLibrary () {
@@ -115,6 +127,13 @@
             },
             endTurn () {
                 this.currentPhase = 'Waiting...';
+            },
+            showSorceryPlayed (card) {
+                this.highlightedCards.push(card);
+
+                setTimeout(() => {
+                    this.highlightedCards.splice(0, 1);
+                }, 3000);
             }
         },
         computed: {
@@ -135,6 +154,23 @@
             },
             graveyard () {
                 return this.$store.getters['graveyard'];
+            },
+            cardsPlayedThisTurn () {
+                return this.$store.getters['cardsPlayedThisTurn'];
+            },
+            sorceriesPlayed () {
+                return this.cardsPlayedThisTurn.filter(card => {
+                    return card.type === 'Sorcery';
+                });
+            }
+        },
+        watch: {
+            sorceriesPlayed (cards) {
+                if (cards.length) {
+                    cards.forEach(card => {
+                        this.showSorceryPlayed(card);
+                    });
+                }
             }
         }
     };

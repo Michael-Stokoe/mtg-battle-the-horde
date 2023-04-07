@@ -31,6 +31,9 @@ const store = createStore({
         },
         graveyard (state) {
             return state.graveyard;
+        },
+        cardsPlayedThisTurn (state) {
+            return state.cardsPlayedThisTurn;
         }
     },
     actions: {
@@ -49,6 +52,7 @@ const store = createStore({
                     }
 
                     library[x] = ({
+                        "index": x,
                         "name": card.name,
                         "type": card.type,
                         "image": card.image,
@@ -79,6 +83,9 @@ const store = createStore({
         },
         handleEndStep (context) {
             context.commit('handleEndStep');
+        },
+        destroyCard (context, index) {
+            context.commit('destroyCard', index);
         }
     },
     mutations: {
@@ -117,6 +124,7 @@ const store = createStore({
                     card.tapped = false;
                     card.firstStrike = false;
                     card.deathTouch = false;
+                    card.menace = false;
                     card.power = card.originalPower;
                     card.toughness = card.originalToughness;
                 }
@@ -178,15 +186,19 @@ const store = createStore({
             if (interventionsPlayed > 0) {
                 let damageToCreatures = 3 * interventionsPlayed;
 
-                let x = 0;
+                let toRemove = [];
+
                 boardState.forEach((card) => {
-                    if (card.toughness > 0 && (damageToCreatures >= card.toughness)) {
+                    if (card.type === 'Creature' && (damageToCreatures >= card.toughness)) {
                         graveyard.push(card);
-                        boardState.splice(x, 1);
+                        toRemove.push(card);
 
                         card.tapped = false;
                     }
-                    ++x;
+                });
+
+                toRemove.forEach(card => {
+                    boardState.splice(boardState.indexOf(card), 1);
                 });
             }
 
@@ -230,15 +242,40 @@ const store = createStore({
             let boardState = Object.assign(state.boardState, []);
             let graveyard = Object.assign(state.graveyard, []);
 
+            // need to kill all 'Reckless Minotaur' cards
+            // Add them to graveyard
+            // Remove them from boardstate
+
             let x = 0;
+            let toRemove = [];
 
             boardState.forEach((card) => {
                 if (card.name === 'Reckless Minotaur') {
+                    toRemove.push(card);
+                    card.tapped = false;
+                    card.menace = false;
+                    card.firstStrike = false;
+                    card.deathTouch = false;
                     graveyard.push(card);
-                    boardState.splice(x, 1);
                 }
-                x++;
             });
+
+            toRemove.forEach(card => {
+                boardState.splice(boardState.indexOf(card), 1);
+            });
+
+            state.boardState = boardState;
+            state.graveyard = graveyard;
+        },
+        destroyCard (state, index) {
+            let boardState = Object.assign(state.boardState, []);
+            let graveyard = Object.assign(state.graveyard, []);
+
+            let card = boardState.filter(card => card.index === index)[0];
+            console.log(card);
+            
+            graveyard.push(card);
+            boardState.splice(boardState.indexOf(card), 1);
 
             state.boardState = boardState;
             state.graveyard = graveyard;
