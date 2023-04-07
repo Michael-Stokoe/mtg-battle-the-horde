@@ -7,8 +7,8 @@
 
         <div clas="relative flex space-x-2">
             <div class="absolute h-full w-full z-10" v-if="highlightedCards.length">
-                <div class="grid ">
-                    <card v-for="card in highlightedCards" :key="card" :card="card" />
+                <div class="grid grid-cols-4">
+                    <card class="shadow-xl" v-for="card in highlightedCards" :key="card" :card="card" />
                 </div>
             </div>
             <!-- <button
