@@ -67,6 +67,7 @@ const store = createStore({
                         "inGraveyard": false,
                         "isAttacking": false,
                         "isBlocked": false,
+                        "isBlockedAndDead": false,
                     });
 
                     x++;
@@ -102,8 +103,11 @@ const store = createStore({
         creatureNotAttacking (context, card) {
             context.commit('creatureNotAttacking', card);
         },
-        blockCreature (context, card) {
-            context.commit('blockCreature', card);
+        toggleBlockCreature (context, card) {
+            context.commit('toggleBlockCreature', card);
+        },
+        toggleBlockKillCreatureAndKill (context, card) {
+            context.commit('toggleBlockKillCreatureAndKill', card);
         }
     },
     mutations: {
@@ -286,14 +290,20 @@ const store = createStore({
             }).length > 0;
 
             boardState.forEach((card) => {
-                if (card.type === 'Creature' && (card.name === 'Reckless Minotaur' || consumingRagePlayed)) {
-                    toRemove.push(card);
-                    card.tapped = false;
-                    card.menace = false;
-                    card.firstStrike = false;
-                    card.deathTouch = false;
-                    card.inGraveyard = true;
-                    graveyard.push(card);
+                card.isBlocked = false;
+
+                if (card.type === 'Creature') {
+                    if (card.name === 'Reckless Minotaur' || card.isBlockedAndDead || consumingRagePlayed) {
+                        toRemove.push(card);
+                        card.tapped = false;
+                        card.menace = false;
+                        card.firstStrike = false;
+                        card.deathTouch = false;
+                        card.inGraveyard = true;
+                        card.isBlockedAndDead = false;
+                        card.isBlocked = false;
+                        graveyard.push(card);
+                    }
                 }
             });
 
@@ -334,11 +344,19 @@ const store = createStore({
 
             state.boardState = boardState;
         },
-        blockCreature (state, card) {
+        toggleBlockCreature (state, card) {
             let boardState = Object.assign(state.boardState, []);
             let index = boardState.indexOf(card);
 
-            boardState[index]['isBlocked'] = true;
+            boardState[index]['isBlocked'] = !boardState[index]['isBlocked'];
+
+            state.boardState = boardState;
+        },
+        toggleBlockKillCreatureAndKill (state, card) {
+            let boardState = Object.assign(state.boardState, []);
+            let index = boardState.indexOf(card);
+
+            boardState[index]['isBlockedAndDead'] = !boardState[index]['isBlockedAndDead'];
 
             state.boardState = boardState;
         }

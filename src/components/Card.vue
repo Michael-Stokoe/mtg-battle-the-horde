@@ -11,7 +11,7 @@
                 v-if="type === 'Creature'"
                 class="text-3xl text-white hover:text-gray-300"
                 title="Block"
-                @click="block"
+                @click="toggleBlock"
             >
                 <i class="fas fa-shield"></i>
             </button>
@@ -19,7 +19,7 @@
                 v-if="type === 'Creature'"
                 class="text-3xl text-white hover:text-gray-300"
                 title="Block & Kill"
-                @click="blockKill"
+                @click="toggleBlockKill"
             >
                 <i class="fas fa-shield-virus"></i>
             </button>
@@ -34,6 +34,9 @@
 
         <div v-if="card.isBlocked" class="flex absolute bottom-5 left-5 flex-col p-1 space-y-2 text-xs text-white bg-gray-800 rounded">
             <div>Blocked</div>
+        </div>
+        <div v-if="card.isBlockedAndDead" class="flex absolute bottom-5 left-5 flex-col p-1 space-y-2 text-xs text-white bg-gray-800 rounded">
+            <div>Blocked & Dying</div>
         </div>
         <div v-if="card.deathTouch || card.menace || card.firstStrike" class="flex absolute bottom-2 left-5 flex-col p-1 space-y-2 text-xs text-white bg-black rounded">
             <div v-if="card.menace" title="Menace">Menace</div>
@@ -66,17 +69,16 @@
             image: null,
             isAttacking: false,
             isPopup: false,
-            isBlocked: false,
         }),
         methods: {
             destroyCard () {
                 this.$store.dispatch('destroyCard', this.card.index);
             },
-            block () {
-                this.$store.dispatch('blockCreature', this.card);
+            toggleBlock () {
+                this.$store.dispatch('toggleBlockCreature', this.card);
             },
-            blockKill () {
-                this.$store.dispatch('destroyCard', this.card.index);
+            toggleBlockKill () {
+                this.$store.dispatch('toggleBlockKillCreatureAndKill', this.card);
             }
         },
         computed: {
