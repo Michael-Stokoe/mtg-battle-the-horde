@@ -65,6 +65,8 @@ const store = createStore({
                         "firstStrike": false,
                         "menace": false,
                         "inGraveyard": false,
+                        "isAttacking": false,
+                        "isBlocked": false,
                     });
 
                     x++;
@@ -93,6 +95,15 @@ const store = createStore({
         },
         dealDamage (context, damage) {
             context.commit('dealDamage', damage);
+        },
+        creatureAttacking (context, card) {
+            context.commit('creatureAttacking', card);
+        },
+        creatureNotAttacking (context, card) {
+            context.commit('creatureNotAttacking', card);
+        },
+        blockCreature (context, card) {
+            context.commit('blockCreature', card);
         }
     },
     mutations: {
@@ -102,7 +113,7 @@ const store = createStore({
         shuffle (state) {
             let cards = Object.assign(state.library, []);
 
-            for (var i = cards.length - 1; i > 0; i--) { 
+            for (var i = cards.length - 1; i > 0; i--) {
                 var j = Math.floor(Math.random() * (i + 1));
                            
                 var temp = cards[i];
@@ -110,7 +121,6 @@ const store = createStore({
                 cards[j] = temp;
             }
 
-            
             state.library = cards;
         },
         handleMainPhase (state) {
@@ -255,7 +265,6 @@ const store = createStore({
             let graveyard = Object.assign(state.graveyard, []);
 
             let card = boardState.filter(card => card.index === index)[0];
-            console.log(card);
             card.tapped = false;
             card.inGraveyard = true;
             graveyard.push(card);
@@ -308,6 +317,30 @@ const store = createStore({
 
             state.library = library;
             state.graveyard = graveyard;
+        },
+        creatureAttacking (state, card) {
+            let boardState = Object.assign(state.boardState, []);
+            let index = boardState.indexOf(card);
+
+            boardState[index]['isAttacking'] = true;
+
+            state.boardState = boardState;
+        },
+        creatureNotAttacking (state, card) {
+            let boardState = Object.assign(state.boardState, []);
+            let index = boardState.indexOf(card);
+
+            boardState[index]['isAttacking'] = false;
+
+            state.boardState = boardState;
+        },
+        blockCreature (state, card) {
+            let boardState = Object.assign(state.boardState, []);
+            let index = boardState.indexOf(card);
+
+            boardState[index]['isBlocked'] = true;
+
+            state.boardState = boardState;
         }
     },
 });

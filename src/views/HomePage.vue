@@ -15,6 +15,7 @@
                     <li>A red border on a creature indicates that creature is attacking this turn.</li>
                     <li>When sorceries are played by the horde, the card will appear first on screen at the top, and go straight to the horde's graveyard.</li>
                     <li>Attacking the horde on your turn will put X cards from the horde's library into its graveyard, where X is the damage you dealt.</li>
+                    <li>The horde has infinite mana, and as such will always pay for costs for cards such as Rhystic Study, Smothering Tithe etc.</li>
                 </ul>
             </div>
             <div class="col-span-2">
@@ -105,6 +106,13 @@
             <p class="text-xl">The horde has {{ remainingCards }} cards remaining in its library</p>
         </div>
 
+        <div class="py-6">
+            <label for="autoDamage">
+                <input name="autoDamage" type="checkbox" v-model="autoDamage">
+                Automatically subtract damage from unblocked attackers
+            </label>
+        </div>
+
         <h2 class="pt-8 text-xl font-semibold">Artifacts ({{ boardArtifacts.length }}):</h2>
         <div class="grid grid-cols-3 gap-12 p-6 bg-gray-200 rounded-lg sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8" v-if="boardArtifacts.length">
             <div v-for="card in boardArtifacts" :key="card.index">
@@ -132,6 +140,8 @@
 <script>
     import Card from '../components/Card.vue';
     import LifeCounter from '../components/LifeCounter.vue';
+    import events from '../events';
+    import functions from '../functions';
 
     export default {
         components: {
@@ -145,8 +155,18 @@
             showGuide: false,
             damage: 0,
             damageDealt: 0,
-            showDamageBox: false
+            showDamageBox: false,
+            autoDamage: false,
         }),
+        mounted () {
+            events.$on('creature-attacking', card => {
+                this.$store.dispatch('creatureAttacking', card);
+            });
+
+            events.$on('creature-not-attacking', card => {
+                this.$store.dispatch('creatureNotAttacking', card);
+            });
+        },
         methods: {
             shuffleHordeLibrary () {
                 this.$store.dispatch("shuffle");
@@ -165,6 +185,10 @@
             resolveDamage () {
                 this.currentPhase = 'Declare Blockers and Damage Resolution';
                 this.$store.dispatch('handleEndStep');
+
+                if (this.autoDamage) {
+                    events.$emit('lose-life', this.totalUnblockedDamage);
+                }
             },
             endTurn () {
                 this.$store.dispatch('cleanUp');
@@ -217,6 +241,10 @@
                 return this.cardsPlayedThisTurn.filter(card => {
                     return card.type === 'Sorcery';
                 });
+            },
+            totalUnblockedDamage () {
+                let attackingCreatures = this.boardCreatures.filter(creature => creature.isAttacking);
+                return functions.arraySum(attackingCreatures, 'power');
             }
         },
         watch: {
