@@ -246,7 +246,7 @@
                 });
             },
             totalUnblockedDamage () {
-                let attackingCreatures = this.boardCreatures.filter(creature => creature.isAttacking && !creature.isBlocked);
+                let attackingCreatures = this.boardCreatures.filter(creature => creature.isAttacking && !(creature.isBlocked || creature.isBlockedAndDead));
                 return functions.arraySum(attackingCreatures, 'power');
             }
         },
