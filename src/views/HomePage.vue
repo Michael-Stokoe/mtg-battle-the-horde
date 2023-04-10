@@ -168,6 +168,9 @@
             });
         },
         methods: {
+            newGame () {
+                window.location.reload();
+            },
             shuffleHordeLibrary () {
                 this.$store.dispatch("shuffle");
             },
