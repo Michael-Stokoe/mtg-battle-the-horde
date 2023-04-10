@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col p-12 space-y-4">
         <div class="grid grid-cols-7 gap-4">
-            <div class="col-span-5">
+            <div class="col-span-4">
                 <h1 class="text-6xl font-semibold text-red-500">Battle The Horde</h1>
 
                 <div class="mt-2">
@@ -18,7 +18,7 @@
                     <li>The horde has infinite mana, and as such will always pay for costs for cards such as Rhystic Study, Smothering Tithe etc.</li>
                 </ul>
             </div>
-            <div class="col-span-2">
+            <div class="col-span-3">
                 <life-counter />
             </div>
         </div>
