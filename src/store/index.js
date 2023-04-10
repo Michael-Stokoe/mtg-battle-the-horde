@@ -262,7 +262,34 @@ const store = createStore({
             state.graveyard = graveyard;
         },
         handleEndStep (state) {
-            
+            let boardState = Object.assign(state.boardState, []);
+            let graveyard = Object.assign(state.graveyard, []);
+
+            let toRemove = [];
+            boardState.forEach((card) => {
+                card.isBlocked = false;
+
+                if (card.type === 'Creature') {
+                    if (card.isBlockedAndDead) {
+                        toRemove.push(card);
+                        card.tapped = false;
+                        card.menace = false;
+                        card.firstStrike = false;
+                        card.deathTouch = false;
+                        card.inGraveyard = true;
+                        card.isBlockedAndDead = false;
+                        card.isBlocked = false;
+                        graveyard.push(card);
+                    }
+                }
+            });
+
+            toRemove.forEach(card => {
+                boardState.splice(boardState.indexOf(card), 1);
+            });
+
+            state.boardState = boardState;
+            state.graveyard = graveyard;
         },
         destroyCard (state, index) {
             let boardState = Object.assign(state.boardState, []);
@@ -293,7 +320,7 @@ const store = createStore({
                 card.isBlocked = false;
 
                 if (card.type === 'Creature') {
-                    if (card.name === 'Reckless Minotaur' || card.isBlockedAndDead || consumingRagePlayed) {
+                    if (card.name === 'Reckless Minotaur' || consumingRagePlayed) {
                         toRemove.push(card);
                         card.tapped = false;
                         card.menace = false;
